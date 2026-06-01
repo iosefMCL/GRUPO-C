@@ -101,6 +101,18 @@ void modificarPrioridad(int id, int nuevaPrioridad) {
     cout << "Error: Proceso no encontrado.\n";
 }
 
+void popMemoria() {
+    if (topePila != NULL) {                 
+        NodoPila* aux = topePila;           
+        cout << "Memoria liberada: " << aux->bloqueMemoria << "\n";
+        topePila = topePila->siguiente;     
+        delete aux;                         
+    } else {
+        cout << "No hay memoria para liberar.\n"; 
+    }
+}
+
+
 int main() {
 	
     int opcion;
@@ -148,6 +160,9 @@ int main() {
                 
             case 6:
                 cout << "Saliendo de la primera parte...\n";
+                break;
+			case 7:
+                popMemoria();
                 break;
                 
             default:
