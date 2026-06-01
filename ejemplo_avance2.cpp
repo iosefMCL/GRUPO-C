@@ -101,6 +101,14 @@ void modificarPrioridad(int id, int nuevaPrioridad) {
     cout << "Error: Proceso no encontrado.\n";
 }
 
+void pushMemoria(string bloque) {
+    NodoPila* nuevoNodo = new NodoPila();   // Crea el nuevo nodo dinámico.
+    nuevoNodo->bloqueMemoria = bloque;      // Le asigna el nombre del bloque.
+    nuevoNodo->siguiente = topePila;        // El nuevo nodo se pone "encima" del antiguo tope.
+    topePila = nuevoNodo;                   // El tope de la pila ahora es este nuevo nodo.
+    cout << "Memoria asignada: " << bloque << "\n";
+}
+
 void popMemoria() {
     if (topePila != NULL) {                 
         NodoPila* aux = topePila;           
@@ -109,6 +117,26 @@ void popMemoria() {
         delete aux;                         
     } else {
         cout << "No hay memoria para liberar.\n"; 
+    }
+}
+
+void guardarEstado() {
+    ofstream archivo("procesos.txt");       // Abre (o crea) un archivo llamado procesos.txt en modo escritura.
+    if (archivo.is_open()) {                // Verifica si el archivo se abrió correctamente sin errores.
+        NodoLista* actual = listaProcesos;  // Puntero para recorrer la lista de procesos.
+        
+        // Recorre todos los nodos hasta el final.
+        while (actual != NULL) {
+            // Escribe en el archivo de texto: ID Nombre Prioridad (separados por espacio).
+            archivo << actual->proceso.id << " " 
+                    << actual->proceso.nombre << " " 
+                    << actual->proceso.prioridad << "\n";
+            actual = actual->siguiente;     // Avanza al siguiente proceso.
+        }
+        archivo.close();                    // Cierra el archivo para guardar los cambios y liberar el recurso.
+        cout << "Estado guardado correctamente.\n";
+    } else {
+        cout << "Error al abrir el archivo.\n"; // Si no se tienen permisos o hay error de disco.
     }
 }
 
@@ -124,7 +152,10 @@ int main() {
         cout << "3. Eliminar proceso del sistema\n";
         cout << "4. Buscar proceso (por ID o Nombre)\n";
         cout << "5. Modificar prioridad de un proceso\n";
-        cout << "6. Salir\n";
+		cout << "6. Asignar Memoria (Pila)\n";
+		cout << "7. Asignar Memoria (Pila)\n";
+		cout << "8. Guardar Estado del Sistema\n";
+        cout << "9. Salir\n";
         cout << "opcion: ";
         cin >> opcion;
 
@@ -157,18 +188,29 @@ int main() {
                 cout << "Nueva prioridad: "; cin >> prio;
                 modificarPrioridad(id, prio);
                 break;
-                
-            case 6:
-                cout << "Saliendo de la primera parte...\n";
+
+			case 6:
+                cout << "Nombre del bloque de memoria: "; cin >> bloque;
+                pushMemoria(bloque);
                 break;
+
 			case 7:
                 popMemoria();
                 break;
+
+			case 8:
+                guardarEstado();
+                break;
+                
+            case 9:
+                cout << "Saliendo de la primera parte...\n";
+                break;
+			
                 
             default:
                 cout << "Opcion no valida, intente nuevamente.\n";
         }
-    } while (opcion != 6);
+    } while (opcion != 9);
     
     cout<<"saliendo"<<endl;
 
