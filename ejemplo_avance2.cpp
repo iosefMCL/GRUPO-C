@@ -1,121 +1,139 @@
-#include <iostream>
-#include <string>
-#include <fstream>
+#include <iostream> // Librería estándar para entrada y salida de datos (cin, cout)
+#include <string>   // Librería para manejar cadenas de texto (nombres, estados)
+#include <fstream>  // Librería para manejar archivos (guardar y cargar datos)
 
-using namespace std;
+using namespace std; // Evita tener que escribir "std::" antes de cada cout o cin
 
 // ==========================================
-// ESTRUCTURAS BÁSICAS
+// ESTRUCTURAS BÁSICAS (LOS DATOS)
 // ==========================================
+
+// Estructura que representa la información real de un estudiante
 struct Estudiante {
-    int id;
-    string nombre;
-    int prioridad; // 1 (Tercio Superior/Alta) a 5 (Baja)
+    int id;           // Identificador único (DNI o código de alumno)
+    string nombre;    // Nombre del estudiante
+    int prioridad;    // Nivel de prioridad (1 es la más alta, 5 la más baja)
 };
 
+// Nodo para las estructuras dinámicas (Lista y Cola)
 struct NodoEstudiante {
-    Estudiante dato;
-    NodoEstudiante* siguiente;
+    Estudiante dato;           // Guarda la información del estudiante
+    NodoEstudiante* siguiente; // Puntero que enlaza con el próximo nodo en la memoria
 };
 
+// Nodo específico para la Pila (Historial)
 struct NodoHistorial {
-    int idBoleta;
-    Estudiante estudiante;
-    NodoHistorial* siguiente;
+    int idBoleta;              // Número de boleta generada en la matrícula
+    Estudiante estudiante;     // Datos del estudiante matriculado
+    NodoHistorial* siguiente;  // Puntero que enlaza con el trámite anterior en la pila
 };
 
 // ==========================================
-// 1. PILA: HISTORIAL DE TRÁMITES (Reemplaza al Gestor de Memoria)
+// 1. PILA: HISTORIAL DE TRÁMITES (LIFO: Último en entrar, primero en salir)
 // ==========================================
 class PilaHistorial {
 private:
-    NodoHistorial* tope;
-    int contadorBoletas;
+    NodoHistorial* tope; // Puntero que siempre mira al último elemento agregado
+    int contadorBoletas; // Generador automático de números de boleta
+
 public:
+    // Constructor: Se ejecuta al crear la pila. Inicia vacía y las boletas desde 1000.
     PilaHistorial() {
-        tope = NULL;
+        tope = NULL; 
         contadorBoletas = 1000;
     }
 
+    // Método PUSH: Agrega un nuevo elemento a la cima de la pila
     void push(Estudiante est) {
-        NodoHistorial* nuevo = new NodoHistorial();
-        nuevo->idBoleta = contadorBoletas++;
-        nuevo->estudiante = est;
-        nuevo->siguiente = tope;
-        tope = nuevo;
+        NodoHistorial* nuevo = new NodoHistorial(); // Reserva memoria dinámica para el nuevo nodo
+        nuevo->idBoleta = contadorBoletas++;        // Asigna la boleta actual y luego suma 1
+        nuevo->estudiante = est;                    // Guarda los datos del estudiante
+        nuevo->siguiente = tope;                    // El nuevo nodo apunta al antiguo "tope"
+        tope = nuevo;                               // Ahora el "tope" es este nuevo nodo
         cout << "[Historial] Matricula procesada. Boleta Nro: " << nuevo->idBoleta << " generada.\n";
     }
 
+    // Método POP: Saca el último elemento agregado (Deshacer trámite)
     void pop() {
-        if (tope == NULL) {
+        if (tope == NULL) { // Verifica si la pila está vacía (Underflow)
             cout << "[Historial] No hay matriculas recientes para deshacer.\n";
             return;
         }
-        NodoHistorial* aux = tope;
-        tope = tope->siguiente;
+        NodoHistorial* aux = tope; // Guardamos temporalmente el nodo actual del tope
+        tope = tope->siguiente;    // El tope baja al siguiente elemento de la pila
         cout << "[Historial] Matricula deshecha (Pop). Boleta anulada: " << aux->idBoleta << " de " << aux->estudiante.nombre << "\n";
-        delete aux;
+        delete aux; // Liberamos la memoria RAM del nodo eliminado
     }
 
+    // Muestra todos los elementos de la pila desde el tope hasta la base
     void mostrar() {
         if (tope == NULL) {
             cout << "[Historial] Pila vacia.\n";
             return;
         }
-        NodoHistorial* actual = tope;
+        NodoHistorial* actual = tope; // Empezamos a recorrer desde el tope
         cout << "\n--- HISTORIAL DE MATRICULAS (PILA) ---\n";
-        while (actual != NULL) {
+        while (actual != NULL) { // Mientras no lleguemos al final (NULL)
             cout << "| Boleta: " << actual->idBoleta << " | Alumno: " << actual->estudiante.nombre << " |\n";
-            actual = actual->siguiente;
+            actual = actual->siguiente; // Saltamos al siguiente nodo
         }
         cout << "--------------------------------------\n";
     }
 };
 
 // ==========================================
-// 2. COLA DE PRIORIDAD: FILA DE MATRÍCULA (Reemplaza al Planificador CPU)
+// 2. COLA DE PRIORIDAD: FILA DE MATRÍCULA
 // ==========================================
 class ColaMatricula {
 private:
-    NodoEstudiante* frente;
-    NodoEstudiante* fin;
+    NodoEstudiante* frente; // Puntero al primer elemento de la cola (el próximo a atender)
+    NodoEstudiante* fin;    // Puntero al último elemento de la cola
+
 public:
+    // Constructor: Inicia la cola vacía
     ColaMatricula() { frente = NULL; fin = NULL; }
 
+    // Encolar: Inserta un estudiante ORDENADO según su prioridad
     void encolar(Estudiante p) {
-        NodoEstudiante* nuevo = new NodoEstudiante();
+        NodoEstudiante* nuevo = new NodoEstudiante(); // Crea el nuevo nodo
         nuevo->dato = p;
-        nuevo->siguiente = NULL;
+        nuevo->siguiente = NULL; // Como es el último que estamos evaluando, apunta a la nada
 
-        // Inserción ordenada por prioridad (Menor número = mayor prioridad)
+        // Caso 1: La cola está vacía o el nuevo tiene MÁS prioridad (menor número) que el frente
         if (frente == NULL || p.prioridad < frente->dato.prioridad) {
-            nuevo->siguiente = frente;
-            frente = nuevo;
-        } else {
-            NodoEstudiante* actual = frente;
+            nuevo->siguiente = frente; // El nuevo nodo apunta al antiguo frente
+            frente = nuevo;            // El frente ahora es el nuevo nodo
+        } 
+        // Caso 2: Buscar su posición correcta en medio o al final de la cola
+        else {
+            NodoEstudiante* actual = frente; // Empezamos a buscar desde el frente
+            // Avanzamos mientras no estemos en el final y la prioridad del nodo siguiente sea menor o igual a la nuestra
             while (actual->siguiente != NULL && actual->siguiente->dato.prioridad <= p.prioridad) {
                 actual = actual->siguiente;
             }
+            // Insertamos el nuevo nodo entre 'actual' y 'actual->siguiente'
             nuevo->siguiente = actual->siguiente;
             actual->siguiente = nuevo;
         }
         cout << "[Cola] Estudiante " << p.nombre << " en la fila con prioridad " << p.prioridad << ".\n";
     }
 
+    // Desencolar: Saca al primer elemento de la cola (FIFO: Primero en entrar/tener prioridad, primero en salir)
     Estudiante desencolar() {
-        Estudiante vacio = {-1, "", -1};
-        if (frente == NULL) {
+        Estudiante vacio = {-1, "", -1}; // Dato por defecto en caso de error
+        if (frente == NULL) { // Si la cola está vacía
             cout << "[Cola] No hay estudiantes en espera.\n";
             return vacio;
         }
-        NodoEstudiante* aux = frente;
-        Estudiante procesado = aux->dato;
-        frente = frente->siguiente;
-        cout << "\n[>> PROCESANDO <<] Matrícula de: " << procesado.nombre << " (ID: " << procesado.id << ")\n";
-        delete aux;
-        return procesado;
+        NodoEstudiante* aux = frente; // Guardamos el frente actual
+        Estudiante procesado = aux->dato; // Guardamos los datos para devolverlos
+        frente = frente->siguiente;       // El frente se mueve al segundo de la fila
+        cout << "\n[>> PROCESANDO <<] Matricula de: " << procesado.nombre << " (ID: " << procesado.id << ")\n";
+        delete aux; // Liberamos la memoria del nodo desencolado
+        return procesado; // Retornamos los datos para mandarlos al historial (Pila)
     }
 
+    // Imprime la cola actual
     void mostrar() {
         if (frente == NULL) {
             cout << "[Cola] La fila de matricula esta vacia.\n";
@@ -132,56 +150,67 @@ public:
 };
 
 // ==========================================
-// 3. LISTA ENLAZADA: REGISTRO DE ALUMNOS (Reemplaza al Gestor de Procesos)
+// 3. LISTA ENLAZADA SIMPLE: REGISTRO GENERAL
 // ==========================================
 class ListaEstudiantes {
 private:
-    NodoEstudiante* cabeza;
+    NodoEstudiante* cabeza; // Puntero al inicio de la lista
 public:
     ListaEstudiantes() { cabeza = NULL; }
 
+    // Insertar: Agrega al estudiante al inicio de la lista
     void insertar(Estudiante p) {
         NodoEstudiante* nuevo = new NodoEstudiante();
         nuevo->dato = p;
-        nuevo->siguiente = cabeza;
-        cabeza = nuevo;
+        nuevo->siguiente = cabeza; // El nuevo nodo empuja al resto
+        cabeza = nuevo;            // La cabeza ahora es el nuevo nodo
         cout << "[Registro] Estudiante guardado en el sistema.\n";
     }
 
+    // Eliminar: Busca un ID y borra el nodo que lo contiene
     void eliminar(int id) {
-        if (cabeza == NULL) return;
+        if (cabeza == NULL) return; // Si está vacía, no hace nada
+
+        // Si el elemento a eliminar es el primero (la cabeza)
         if (cabeza->dato.id == id) {
             NodoEstudiante* aux = cabeza;
-            cabeza = cabeza->siguiente;
-            delete aux;
+            cabeza = cabeza->siguiente; // La cabeza pasa al segundo nodo
+            delete aux;                 // Borramos el antiguo primer nodo
             cout << "[Registro] Estudiante eliminado.\n";
             return;
         }
+
+        // Si el elemento está más adelante en la lista
         NodoEstudiante* actual = cabeza;
+        // Buscamos el nodo ANTERIOR al que queremos eliminar
         while (actual->siguiente != NULL && actual->siguiente->dato.id != id) {
             actual = actual->siguiente;
         }
+        
+        // Si encontramos el nodo anterior
         if (actual->siguiente != NULL) {
-            NodoEstudiante* aux = actual->siguiente;
-            actual->siguiente = aux->siguiente;
-            delete aux;
+            NodoEstudiante* aux = actual->siguiente; // Nodo a eliminar
+            actual->siguiente = aux->siguiente;      // "Saltamos" el nodo a eliminar para desenlazarlo
+            delete aux;                              // Liberamos memoria
             cout << "[Registro] Estudiante eliminado.\n";
         } else {
-            cout << "[Registro] ID no encontrado.\n";
+            cout << "[Registro] ID no encontrado.\n"; // Llegamos al final y no estaba
         }
     }
 
+    // Buscar: Recorre la lista y retorna un puntero al nodo si lo encuentra
     NodoEstudiante* buscar(int id) {
         NodoEstudiante* actual = cabeza;
         while (actual != NULL) {
-            if (actual->dato.id == id) return actual;
-            actual = actual->siguiente;
+            if (actual->dato.id == id) return actual; // ¡Lo encontró!
+            actual = actual->siguiente;               // Pasa al siguiente
         }
-        return NULL;
+        return NULL; // Retorna nulo si no lo encontró
     }
 
+    // Actualiza la prioridad académica de un estudiante existente
     void modificarPrioridad(int id, int nuevaPrioridad) {
-        NodoEstudiante* p = buscar(id);
+        NodoEstudiante* p = buscar(id); // Reutilizamos el método buscar
         if (p != NULL) {
             p->dato.prioridad = nuevaPrioridad;
             cout << "[Registro] Prioridad academica actualizada.\n";
@@ -190,8 +219,13 @@ public:
         }
     }
 
+    // Imprime todo el registro
     void mostrarTodo() {
         NodoEstudiante* actual = cabeza;
+        if (cabeza == NULL) {
+            cout << "\n[Registro] No hay estudiantes registrados.\n";
+            return;
+        }
         cout << "\n--- REGISTRO GENERAL DE ESTUDIANTES ---\n";
         while (actual != NULL) {
             cout << "ID: " << actual->dato.id << " | Nombre: " << actual->dato.nombre 
@@ -200,68 +234,79 @@ public:
         }
     }
 
-    // Persistencia de datos
+    // Persistencia: Guarda la lista en un archivo .txt
     void guardarEnArchivo(const string& nombreArchivo) {
-        ofstream archivo(nombreArchivo.c_str());
+        ofstream archivo(nombreArchivo.c_str()); // Abre o crea el archivo en modo escritura
         NodoEstudiante* actual = cabeza;
         while (actual != NULL) {
+            // Escribe en el archivo separado por espacios
             archivo << actual->dato.id << " " << actual->dato.nombre << " " << actual->dato.prioridad << "\n";
             actual = actual->siguiente;
         }
-        archivo.close();
-        cout << "[Sistema] Datos guardados.\n";
+        archivo.close(); // Siempre cerrar el archivo al terminar
+        cout << "[Sistema] Datos guardados exitosamente en " << nombreArchivo << ".\n";
     }
 
+    // Persistencia: Carga la lista desde un archivo .txt
     void cargarDesdeArchivo(const string& nombreArchivo) {
-        ifstream archivo(nombreArchivo.c_str());
-        if (!archivo.is_open()) return;
+        ifstream archivo(nombreArchivo.c_str()); // Abre el archivo en modo lectura
+        if (!archivo.is_open()) {
+            cout << "[Sistema] No se encontro archivo previo. Se iniciara una base de datos limpia.\n";
+            return; 
+        }
         
+        // Limpiamos la lista actual en memoria para evitar duplicados al recargar
         while(cabeza != NULL) eliminar(cabeza->dato.id);
 
         Estudiante p;
+        // Lee id, nombre y prioridad iterativamente hasta que el archivo acabe
         while (archivo >> p.id >> p.nombre >> p.prioridad) {
             insertar(p);
         }
         archivo.close();
-        cout << "[Sistema] Base de datos cargada.\n";
+        cout << "[Sistema] Base de datos cargada correctamente.\n";
     }
 };
 
 // ==========================================
-// MENÚ PRINCIPAL E INTERFAZ DE USUARIO
+// MENÚ PRINCIPAL (PROGRAMA)
 // ==========================================
 int main() {
+    // Instanciamos los tres objetos de nuestras clases principales
     ListaEstudiantes registroGeneral;
     ColaMatricula filaEspera;
     PilaHistorial historial;
     
-    // Cargar estado inicial si existe
-    registroGeneral.cargarDesdeArchivo("estudiantes.txt");
+    // NOTA: Se ha quitado la carga automática inicial para que sea manual desde el menú.
 
     int opcion;
     do {
+        // Interfaz visual por consola actualizada
         cout << "\n========== UNIVERSIDAD CONTINENTAL ==========\n";
         cout << "   SISTEMA DE MATRICULA - ING. DE SISTEMAS\n";
         cout << "=============================================\n";
-        cout << "1. Registrar estudiante (Lista)\n";
-        cout << "2. Eliminar estudiante del registro (Lista)\n";
-        cout << "3. Modificar prioridad academica (Lista)\n";
-        cout << "4. Ver todos los estudiantes (Lista)\n";
-        cout << "5. Enviar estudiante a fila de matricula (Cola)\n";
-        cout << "6. Procesar siguiente matricula (Desencolar y Push a Pila)\n";
-        cout << "7. Ver fila de espera (Cola)\n";
-        cout << "8. Deshacer ultima matricula (Pop de Pila)\n";
-        cout << "9. Ver historial de tramites (Pila)\n";
-        cout << "10. Guardar y Salir\n";
+        cout << "1.  Registrar estudiante (Lista)\n";
+        cout << "2.  Eliminar estudiante del registro (Lista)\n";
+        cout << "3.  Modificar prioridad academica (Lista)\n";
+        cout << "4.  Ver todos los estudiantes (Lista)\n";
+        cout << "5.  Enviar estudiante a fila de matricula (Cola)\n";
+        cout << "6.  Procesar siguiente matricula (Desencolar y Push a Pila)\n";
+        cout << "7.  Ver fila de espera (Cola)\n";
+        cout << "8.  Deshacer ultima matricula (Pop de Pila)\n";
+        cout << "9.  Ver historial de tramites (Pila)\n";
+        cout << "10. Guardar datos en archivo (Persistencia)\n";
+        cout << "11. Cargar datos de archivo (Persistencia)\n";
+        cout << "12. Salir del programa\n";
         cout << "Ingrese opcion: ";
         cin >> opcion;
 
+        // Estructuras de control (Condicionales para el menú)
         if(opcion == 1) {
             Estudiante p;
             cout << "ID (DNI o Codigo): "; cin >> p.id;
             cout << "Nombre (Sin espacios): "; cin >> p.nombre;
             cout << "Prioridad (1 Tercio Superior - 5 Regular): "; cin >> p.prioridad;
-            registroGeneral.insertar(p);
+            registroGeneral.insertar(p); // Llamada al método de la lista
         }
         else if(opcion == 2) {
             int id; cout << "ID a eliminar: "; cin >> id;
@@ -278,17 +323,17 @@ int main() {
         }
         else if(opcion == 5) {
             int id; cout << "ID del estudiante a encolar: "; cin >> id;
-            NodoEstudiante* nodo = registroGeneral.buscar(id);
+            NodoEstudiante* nodo = registroGeneral.buscar(id); // Primero verifica que exista
             if (nodo != NULL) {
-                filaEspera.encolar(nodo->dato);
+                filaEspera.encolar(nodo->dato); // Si existe, pasa una copia de los datos a la cola
             } else {
                 cout << "[Error] El estudiante no existe en el registro general.\n";
             }
         }
         else if(opcion == 6) {
-            Estudiante procesado = filaEspera.desencolar();
-            if(procesado.id != -1) {
-                historial.push(procesado); // Se guarda en la pila
+            Estudiante procesado = filaEspera.desencolar(); // Saca de la cola
+            if(procesado.id != -1) { // Verifica que desencolar() no haya devuelto el error por defecto
+                historial.push(procesado); // Envía los datos a la Pila de historial
             }
         }
         else if(opcion == 7) {
@@ -301,10 +346,21 @@ int main() {
             historial.mostrar();
         }
         else if(opcion == 10) {
+            // Opción nueva: Guardar manualmente
             registroGeneral.guardarEnArchivo("estudiantes.txt");
+        }
+        else if(opcion == 11) {
+            // Opción nueva: Cargar manualmente
+            registroGeneral.cargarDesdeArchivo("estudiantes.txt");
+        }
+        else if(opcion == 12) {
+            // Opción nueva: Salir directamente
             cout << "Saliendo del sistema...\n";
         }
-    } while (opcion != 10);
+        else {
+            cout << "[Error] Opcion invalida. Intente de nuevo.\n";
+        }
+    } while (opcion != 12); // El programa se repite hasta que el usuario digite 12
 
-    return 0;
+    return 0; // Finaliza la ejecución sin errores
 }
