@@ -279,14 +279,14 @@ int main() {
     int opcion;
     do {
         cout <<"==== UNIVERSIDAD CONTINENTAL ===="<<endl;
-        cout <<"======= SISTEMA DE MATRICULA ======"<<endl;
+        cout <<"======= sistema de matricula  ======"<<endl;
         cout << "1.  Registrar estudiante"<<endl;
-        cout << "2.  Eliminar estudiante del registro<<endl;
+        cout << "2.  Eliminar estudiante del registro"<<endl;
         cout << "3.  Modificar prioridad academica"<<endl;
         cout << "4.  Ver todos los estudiantes"<<endl;
         cout << "5.  Enviar estudiante a fila de matricula"<<endl;
         cout << "6.  Procesar siguiente matricula "<<endl;
-        cout << "7.  Ver fila de espera"<<endl,;
+        cout << "7.  Ver fila de espera"<<endl;
         cout << "8.  Deshacer ultima matricula"<<endl;
         cout << "9.  Ver historial de tramites"<<endl;
         cout << "10. Guardar datos en archivo"<<endl;
