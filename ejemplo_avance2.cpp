@@ -269,14 +269,14 @@ public:
 // MENÚ PRINCIPAL (PROGRAMA)
 // ==========================================
 int main() {
-    // Instanciamos los tres objetos de nuestras clases principales
+  
     ListaEstudiantes registroGeneral;
     ColaMatricula filaEspera;
     PilaHistorial historial;
     
     // NOTA: Se ha quitado la carga automática inicial para que sea manual desde el menú.
 
-    int opcion;
+    int op;
     do {
         cout <<"==== UNIVERSIDAD CONTINENTAL ===="<<endl;
         cout <<"======= sistema de matricula  ======"<<endl;
@@ -293,69 +293,68 @@ int main() {
         cout << "11. Cargar datos de archivo"<<endl;
         cout << "12. Salir del programa"<<endl;
         cout << "Ingrese opcion:  ";
-        cin >> opcion;
+        cin >> op;
 
-        // Estructuras de control (Condicionales para el menú)
-        if(opcion == 1) {
-            Estudiante p;
-            cout << "ID (DNI o Codigo): "; cin >> p.id;
-            cout << "Nombre (Sin espacios): "; cin >> p.nombre;
-            cout << "Prioridad (1 Tercio Superior - 5 Regular): "; cin >> p.prioridad;
-            registroGeneral.insertar(p); // Llamada al método de la lista
-        }
-        else if(opcion == 2) {
-            int id; cout << "ID a eliminar: "; cin >> id;
-            registroGeneral.eliminar(id);
-        }
-        else if(opcion == 3) {
-            int id, prio; 
-            cout << "ID del estudiante: "; cin >> id;
-            cout << "Nueva prioridad: "; cin >> prio;
-            registroGeneral.modificarPrioridad(id, prio);
-        }
-        else if(opcion == 4) {
-            registroGeneral.mostrarTodo();
-        }
-        else if(opcion == 5) {
-            int id; cout << "ID del estudiante a encolar: "; cin >> id;
-            NodoEstudiante* nodo = registroGeneral.buscar(id); // Primero verifica que exista
-            if (nodo != NULL) {
-                filaEspera.encolar(nodo->dato); // Si existe, pasa una copia de los datos a la cola
-            } else {
-                cout << "[Error] El estudiante no existe en el registro general.\n";
-            }
-        }
-        else if(opcion == 6) {
-            Estudiante procesado = filaEspera.desencolar(); // Saca de la cola
-            if(procesado.id != -1) { // Verifica que desencolar() no haya devuelto el error por defecto
-                historial.push(procesado); // Envía los datos a la Pila de historial
-            }
-        }
-        else if(opcion == 7) {
-            filaEspera.mostrar();
-        }
-        else if(opcion == 8) {
-            historial.pop();
-        }
-        else if(opcion == 9) {
-            historial.mostrar();
-        }
-        else if(opcion == 10) {
-            // Opción nueva: Guardar manualmente
-            registroGeneral.guardarEnArchivo("estudiantes.txt");
-        }
-        else if(opcion == 11) {
-            // Opción nueva: Cargar manualmente
-            registroGeneral.cargarDesdeArchivo("estudiantes.txt");
-        }
-        else if(opcion == 12) {
-            // Opción nueva: Salir directamente
-            cout << "Saliendo del sistema...\n";
-        }
-        else {
-            cout << "[Error] Opcion invalida. Intente de nuevo.\n";
-        }
-    } while (opcion != 12); // El programa se repite hasta que el usuario digite 12
+        switch(op){
 
-    return 0; // Finaliza la ejecución sin errores
+            case 1:
+                Estudiante p;
+                cout << "ID (DNI o Codigo): "; cin >> p.id;
+                cout << "Nombre (Sin espacios): "; cin >> p.nombre;
+                cout << "Prioridad (1 Tercio Superior - 5 Regular): "; cin >> p.prioridad;
+                registroGeneral.insertar(p); // Llamada al método de la lista
+            
+            case 2:
+                
+                int id; cout << "ID a eliminar: "; cin >> id;
+                registroGeneral.eliminar(id);
+
+            case 3:
+
+                int id, prio; 
+                cout << "ID del estudiante: "; cin >> id;
+                cout << "Nueva prioridad: "; cin >> prio;
+                registroGeneral.modificarPrioridad(id, prio);
+
+            case 4:
+
+               registroGeneral.mostrarTodo();
+
+            case 5:
+
+                int id; cout << "ID del estudiante a encolar: "; cin >> id;
+                NodoEstudiante* nodo = registroGeneral.buscar(id); // Primero verifica que exista
+                if (nodo != NULL) {
+                    filaEspera.encolar(nodo->dato); // Si existe, pasa una copia de los datos a la cola
+                } else {
+                    cout << " El estudiante no existe en el registro general.\n";
+                }
+
+            case 6:
+
+               Estudiante procesado = filaEspera.desencolar(); // Saca de la cola
+               if(procesado.id != -1) { // Verifica que desencolar() no haya devuelto el error por defecto
+               historial.push(procesado); // Envía los datos a la Pila de historial
+            }
+
+            case 7:
+                  filaEspera.mostrar();
+            case 8:
+                  historial.pop();
+            case 9:
+                  historial.mostrar();
+            case 10:
+                 registroGeneral.guardarEnArchivo("estudiantes.txt");
+            case 11:
+                registroGeneral.cargarDesdeArchivo("estudiantes.txt");
+            case 12:
+                cout << "Saliendo del sistema...\n";
+            default: 
+               cout<<"error de dato"<<endl;
+        }
+
+        
+    } while (opcion != 12); 
+
+    return 0; 
 }
