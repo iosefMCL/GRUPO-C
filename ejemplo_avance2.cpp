@@ -1,6 +1,6 @@
-#include <iostream> // Librería estándar para entrada y salida de datos (cin, cout)
-#include <string>   // Librería para manejar cadenas de texto (nombres, estados)
-#include <fstream>  // Librería para manejar archivos (guardar y cargar datos)
+#include <iostream> 
+#include <string>   
+#include <fstream>  
 
 using namespace std; // Evita tener que escribir "std::" antes de cada cout o cin
 
