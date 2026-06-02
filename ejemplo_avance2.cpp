@@ -2,11 +2,8 @@
 #include <string>   
 #include <fstream>  
 
-using namespace std; // Evita tener que escribir "std::" antes de cada cout o cin
+using namespace std;
 
-// ==========================================
-// ESTRUCTURAS BÁSICAS (LOS DATOS)
-// ==========================================
 
 // Estructura que representa la información real de un estudiante
 struct Estudiante {
@@ -82,7 +79,7 @@ public:
 };
 
 // ==========================================
-// 2. COLA DE PRIORIDAD: FILA DE MATRÍCULA
+// COLA DE PRIORIDAD: FILA DE MATRÍCULA
 // ==========================================
 class ColaMatricula {
 private:
@@ -281,23 +278,21 @@ int main() {
 
     int opcion;
     do {
-        // Interfaz visual por consola actualizada
-        cout << "\n========== UNIVERSIDAD CONTINENTAL ==========\n";
-        cout << "   SISTEMA DE MATRICULA - ING. DE SISTEMAS\n";
-        cout << "=============================================\n";
-        cout << "1.  Registrar estudiante (Lista)\n";
-        cout << "2.  Eliminar estudiante del registro (Lista)\n";
-        cout << "3.  Modificar prioridad academica (Lista)\n";
-        cout << "4.  Ver todos los estudiantes (Lista)\n";
-        cout << "5.  Enviar estudiante a fila de matricula (Cola)\n";
-        cout << "6.  Procesar siguiente matricula (Desencolar y Push a Pila)\n";
-        cout << "7.  Ver fila de espera (Cola)\n";
-        cout << "8.  Deshacer ultima matricula (Pop de Pila)\n";
-        cout << "9.  Ver historial de tramites (Pila)\n";
-        cout << "10. Guardar datos en archivo (Persistencia)\n";
-        cout << "11. Cargar datos de archivo (Persistencia)\n";
-        cout << "12. Salir del programa\n";
-        cout << "Ingrese opcion: ";
+        cout <<"==== UNIVERSIDAD CONTINENTAL ===="<<endl;
+        cout <<"======= SISTEMA DE MATRICULA ======"<<endl;
+        cout << "1.  Registrar estudiante"<<endl;
+        cout << "2.  Eliminar estudiante del registro<<endl;
+        cout << "3.  Modificar prioridad academica"<<endl;
+        cout << "4.  Ver todos los estudiantes"<<endl;
+        cout << "5.  Enviar estudiante a fila de matricula"<<endl;
+        cout << "6.  Procesar siguiente matricula "<<endl;
+        cout << "7.  Ver fila de espera"<<endl,;
+        cout << "8.  Deshacer ultima matricula"<<endl;
+        cout << "9.  Ver historial de tramites"<<endl;
+        cout << "10. Guardar datos en archivo"<<endl;
+        cout << "11. Cargar datos de archivo"<<endl;
+        cout << "12. Salir del programa"<<endl;
+        cout << "Ingrese opcion:  ";
         cin >> opcion;
 
         // Estructuras de control (Condicionales para el menú)
