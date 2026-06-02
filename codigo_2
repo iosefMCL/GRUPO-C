@@ -1,0 +1,510 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+//==================================================
+// ESTRUCTURAS
+//==================================================
+
+struct Estudiante {
+    int id;
+    string nombre;
+    int prioridad;
+    string carrera;
+};
+
+struct NodoLista {
+    Estudiante dato;
+    NodoLista* sig;
+};
+
+struct NodoCola {
+    Estudiante dato;
+    NodoCola* sig;
+};
+
+struct NodoPila {
+    Estudiante dato;
+    NodoPila* sig;
+};
+
+struct NodoCarrera {
+    string carrera;
+    NodoCarrera* sig;
+};
+
+//==================================================
+// VARIABLES GLOBALES
+//==================================================
+
+NodoLista* lista = NULL;
+
+NodoCola* frente = NULL;
+NodoCola* finCola = NULL;
+
+NodoPila* cima = NULL;
+
+NodoCarrera* listaCarreras = NULL;
+
+//==================================================
+// CARRERAS
+//==================================================
+
+bool existeCarrera(string carrera)
+{
+    NodoCarrera* aux = listaCarreras;
+
+    while(aux != NULL)
+    {
+        if(aux->carrera == carrera)
+            return true;
+
+        aux = aux->sig;
+    }
+
+    return false;
+}
+
+void agregarCarrera(string carrera)
+{
+    if(existeCarrera(carrera))
+        return;
+
+    NodoCarrera* nuevo = new NodoCarrera;
+
+    nuevo->carrera = carrera;
+    nuevo->sig = listaCarreras;
+
+    listaCarreras = nuevo;
+}
+
+void mostrarCarreras()
+{
+    cout << "\n===== CARRERAS =====\n";
+
+    NodoCarrera* aux = listaCarreras;
+
+    while(aux != NULL)
+    {
+        cout << "- " << aux->carrera << endl;
+        aux = aux->sig;
+    }
+}
+
+//==================================================
+// COLA
+//==================================================
+
+void encolar(Estudiante e)
+{
+    NodoCola* nuevo = new NodoCola;
+
+    nuevo->dato = e;
+    nuevo->sig = NULL;
+
+    if(frente == NULL)
+    {
+        frente = nuevo;
+        finCola = nuevo;
+    }
+    else
+    {
+        finCola->sig = nuevo;
+        finCola = nuevo;
+    }
+}
+
+bool colaVacia(){
+    return frente == NULL;
+}
+
+Estudiante desencolar(){
+    Estudiante e;
+
+    NodoCola* aux = frente;
+
+    e = aux->dato;
+
+    frente = frente->sig;
+
+    if(frente == NULL)
+        finCola = NULL;
+
+    delete aux;
+
+    return e;
+}
+
+void mostrarCola()
+{
+    cout << "\n===== COLA =====\n";
+
+    NodoCola* aux = frente;
+
+    while(aux != NULL)
+    {
+        cout << aux->dato.id << " - "
+             << aux->dato.nombre
+             << " - Prioridad: "
+             << aux->dato.prioridad
+             << endl;
+
+        aux = aux->sig;
+    }
+}
+
+//==================================================
+// PILA
+//==================================================
+
+void push(Estudiante e)
+{
+    NodoPila* nuevo = new NodoPila;
+
+    nuevo->dato = e;
+    nuevo->sig = cima;
+
+    cima = nuevo;
+}
+
+void pop()
+{
+    if(cima == NULL)
+    {
+        cout << "\nHistorial vacio\n";
+        return;
+    }
+
+    NodoPila* aux = cima;
+
+    cout << "\nEliminado: "
+         << aux->dato.nombre << endl;
+
+    cima = cima->sig;
+
+    delete aux;
+}
+
+void mostrarHistorial()
+{
+    cout << "\n===== HISTORIAL =====\n";
+
+    NodoPila* aux = cima;
+
+    while(aux != NULL)
+    {
+        cout << aux->dato.id
+             << " - "
+             << aux->dato.nombre
+             << endl;
+
+        aux = aux->sig;
+    }
+}
+
+//==================================================
+// LISTA ENLAZADA
+//==================================================
+
+void registrarEstudiante()
+{
+    NodoLista* nuevo = new NodoLista;
+
+    cout << "\nID: ";
+    cin >> nuevo->dato.id;
+
+    cin.ignore();
+
+    cout << "Nombre: ";
+    getline(cin, nuevo->dato.nombre);
+
+    cout << "Prioridad: ";
+    cin >> nuevo->dato.prioridad;
+
+    cin.ignore();
+
+    cout << "Carrera: ";
+    getline(cin, nuevo->dato.carrera);
+
+    nuevo->sig = lista;
+    lista = nuevo;
+
+    agregarCarrera(nuevo->dato.carrera);
+
+    encolar(nuevo->dato);
+
+    cout << "\nEstudiante registrado.\n";
+}
+
+void mostrarEstudiantes()
+{
+    cout << "\n===== ESTUDIANTES =====\n";
+
+    NodoLista* aux = lista;
+
+    while(aux != NULL)
+    {
+        cout << "ID: " << aux->dato.id << endl;
+        cout << "Nombre: " << aux->dato.nombre << endl;
+        cout << "Prioridad: " << aux->dato.prioridad << endl;
+        cout << "Carrera: " << aux->dato.carrera << endl;
+        cout << "-------------------\n";
+
+        aux = aux->sig;
+    }
+}
+
+void modificarEstudiante()
+{
+    int id;
+
+    cout << "\nID a modificar: ";
+    cin >> id;
+
+    NodoLista* aux = lista;
+
+    while(aux != NULL)
+    {
+        if(aux->dato.id == id)
+        {
+            cin.ignore();
+
+            cout << "Nuevo nombre: ";
+            getline(cin, aux->dato.nombre);
+
+            cout << "Nueva prioridad: ";
+            cin >> aux->dato.prioridad;
+
+            cin.ignore();
+
+            cout << "Nueva carrera: ";
+            getline(cin, aux->dato.carrera);
+
+            agregarCarrera(aux->dato.carrera);
+
+            cout << "\nModificado.\n";
+            return;
+        }
+
+        aux = aux->sig;
+    }
+
+    cout << "\nNo encontrado.\n";
+}
+
+void eliminarEstudiante()
+{
+    int id;
+
+    cout << "\nID a eliminar: ";
+    cin >> id;
+
+    NodoLista* actual = lista;
+    NodoLista* anterior = NULL;
+
+    while(actual != NULL)
+    {
+        if(actual->dato.id == id)
+        {
+            if(anterior == NULL)
+                lista = actual->sig;
+            else
+                anterior->sig = actual->sig;
+
+            delete actual;
+
+            cout << "\nEliminado.\n";
+            return;
+        }
+
+        anterior = actual;
+        actual = actual->sig;
+    }
+
+    cout << "\nNo encontrado.\n";
+}
+
+//==================================================
+// ARCHIVOS
+//==================================================
+
+void guardarDatos()
+{
+    ofstream archivo("matriculas.txt");
+
+    NodoLista* aux = lista;
+
+    while(aux != NULL)
+    {
+        archivo
+        << aux->dato.id << ";"
+        << aux->dato.nombre << ";"
+        << aux->dato.prioridad << ";"
+        << aux->dato.carrera
+        << endl;
+
+        aux = aux->sig;
+    }
+
+    archivo.close();
+
+    cout << "\nDatos guardados.\n";
+}
+
+void cargarDatos()
+{
+    ifstream archivo("matriculas.txt");
+
+    if(!archivo)
+    {
+        cout << "\nNo existe archivo.\n";
+        return;
+    }
+
+    lista = NULL;
+
+    string linea;
+
+    while(getline(archivo,linea))
+    {
+        Estudiante e;
+
+        int p1 = linea.find(';');
+        int p2 = linea.find(';', p1+1);
+        int p3 = linea.find(';', p2+1);
+
+        e.id = stoi(linea.substr(0,p1));
+
+        e.nombre =
+        linea.substr(p1+1,p2-p1-1);
+
+        e.prioridad =
+        stoi(linea.substr(p2+1,p3-p2-1));
+
+        e.carrera =
+        linea.substr(p3+1);
+
+        NodoLista* nuevo = new NodoLista;
+
+        nuevo->dato = e;
+        nuevo->sig = lista;
+
+        lista = nuevo;
+
+        agregarCarrera(e.carrera);
+    }
+
+    archivo.close();
+
+    cout << "\nDatos cargados.\n";
+}
+
+//==================================================
+// PROCESAR MATRICULA
+//==================================================
+
+void procesarMatricula()
+{
+    if(colaVacia())
+    {
+        cout << "\nNo hay estudiantes en cola.\n";
+        return;
+    }
+
+    Estudiante e = desencolar();
+
+    push(e);
+
+    cout << "\nMatricula procesada:\n";
+    cout << e.nombre << endl;
+}
+
+//==================================================
+// MENU
+//==================================================
+
+int main()
+{
+    int opcion;
+
+    do
+    {
+        cout << "\n=================================\n";
+        cout << " SISTEMA DE MATRICULAS\n";
+        cout << "=================================\n";
+        cout << "1. Registrar estudiante\n";
+        cout << "2. Ver estudiantes\n";
+        cout << "3. Modificar estudiante\n";
+        cout << "4. Eliminar estudiante\n";
+        cout << "5. Guardar datos\n";
+        cout << "6. Cargar datos\n";
+        cout << "7. Ver cola\n";
+        cout << "8. Procesar matricula\n";
+        cout << "9. Ver historial\n";
+        cout << "10. POP historial\n";
+        cout << "11. Ver carreras\n";
+        cout << "12. Salir\n";
+        cout << "Opcion: ";
+
+        cin >> opcion;
+
+        switch(opcion)
+        {
+            case 1:
+                registrarEstudiante();
+                break;
+
+            case 2:
+                mostrarEstudiantes();
+                break;
+
+            case 3:
+                modificarEstudiante();
+                break;
+
+            case 4:
+                eliminarEstudiante();
+                break;
+
+            case 5:
+                guardarDatos();
+                break;
+
+            case 6:
+                cargarDatos();
+                break;
+
+            case 7:
+                mostrarCola();
+                break;
+
+            case 8:
+                procesarMatricula();
+                break;
+
+            case 9:
+                mostrarHistorial();
+                break;
+
+            case 10:
+                pop();
+                break;
+
+            case 11:
+                mostrarCarreras();
+                break;
+
+            case 12:
+                cout << "\nFin del programa.\n";
+                break;
+
+            default:
+                cout << "\nOpcion invalida.\n";
+        }
+
+    } while(opcion != 12);
+
+    return 0;
+}
