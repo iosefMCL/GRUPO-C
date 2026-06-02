@@ -509,7 +509,7 @@ int main()
     return 0;
 }
 // La funcion cola no funciona con prioridad
-// No hay comprovantes en ingresar datos
+// No hay comprovantes en ingresar datos (si pones una a en id se rompe),(no deve pedirte id, deve generar uno)
 // Hay que definir las carreras antes
 // el caso 11 esta mal hecho y deve ser reescrito desde 0
 // no da fedback si esta vacio
@@ -517,4 +517,4 @@ int main()
 // lo que hizo en el caso 10 funciona pero esta muy raro(reescribir)
 // los menus son feos
 // la opcion del menu no tiene comprovante
-// 
+// NO TIENE MATEMATICA!!!!!!!!!!!
